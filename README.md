@@ -40,11 +40,32 @@ cd $WORK
 mkdir -p dedalus-build
 cd dedalus-build
 
-# Now do ONE of the following:
-#
-# (1) Download the latest source code snapshot from Git
+# Download the latest source code snapshot from Git
 git clone https://github.com/DedalusProject/dedalus
 cd dedalus
+
+# if you want to install d2, select the right branch
+git switch v2_master
+# otherwise continue
+
+1. Download mpi-compat.h to the mpi4py include directory
+2. 
+
+## The following steps are required to solve an MPI-4 incompatibility issue, 
+# see https://github.com/DedalusProject/dedalus/issues/303 
+mkdir -p $WORK/venvs/dedalus3/include/mpi4py
+
+# download modified dedalus files
+wget https://www.maths.ed.ac.uk/~linkmann/downloads/dedalus3/d3_MPI-4_compat/mpi-compat.h
+wget https://www.maths.ed.ac.uk/~linkmann/downloads/dedalus3/d3_MPI-4_compat/transposes.pyx
+wget https://www.maths.ed.ac.uk/~linkmann/downloads/dedalus3/d3_MPI-4_compat/fftw_wrappers.pyx
+
+mv mpi-compat.h $WORK/venvs/dedalus3/include/mpi4py
+mv transposes.pyx $WORK/dedalus3-build/dedalus3/dedalus/core
+mv fftw_wrappers.pyx $WORK/dedalus3-build/dedalus3/dedalus/libraries/fftw
+## end of steps required to solve MPI-4 incompatibility issue
+
+
 
 # Patch Dedalus' setup.py to add explicit MPI library dependency
 sed -i -e "/^libraries = \[/s/]/, 'mpi']/" setup.py
